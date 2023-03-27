@@ -1,83 +1,52 @@
 const { randomUUID } = require('node:crypto');
 
-let contacts = [
-  {
-    id: randomUUID(),
-    name: 'Matheus Aurélio',
-    email: 'matheusaurelio2004@gmail.com',
-    phone: '12312131',
-    category_id: randomUUID(),
-  },
-  {
-    id: randomUUID(),
-    name: 'Ana Luiza',
-    email: 'aninha2004@gmail.com',
-    phone: '1231212901',
-    category_id: randomUUID(),
-  },
-];
+const db = require('../../database');
 
 class ContactRepository {
-  findAll() {
-    return new Promise((resolve) => {
-      resolve(contacts);
-    });
+  findAll(orderBy = 'ASC') {
+    const direction = orderBy.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+    const rows = db.query(`SELECT * FROM tbl_contacts ORDER BY name ${direction}`);
+    return rows;
   }
 
   findById(id) {
-    return new Promise((resolve) => {
-      resolve(contacts.find((contact) => contact.id === id));
-    });
+    const row = db.query('SELECT * FROM tbl_contacts WHERE id = ?', [id]);
+    return row;
   }
 
   findByEmail(email) {
-    return new Promise((resolve) => {
-      resolve(contacts.find((contact) => contact.email === email));
-    });
+    const row = db.query('SELECT * FROM tbl_contacts WHERE email = ?', [email]);
+    return row;
   }
 
   create({
     name, email, phone,
   }) {
-    return new Promise((resolve) => {
-      const newContact = {
-        id: randomUUID(),
-        name,
-        email,
-        phone,
-        category_id: randomUUID(),
-      };
+    const row = db.query(
+      `INSERT INTO tbl_contacts(id, name, email, phone)
+      VALUES(?, ?, ?, ?)`,
+      [randomUUID(), name, email, phone],
+    );
 
-      contacts.push(newContact);
-      resolve(contacts);
-    });
+    return row;
   }
 
   updateById(id, {
-    name, email, phone, category_id,
+    name, email, phone,
   }) {
-    return new Promise((resolve) => {
-      const updatedContact = {
-        id,
-        name,
-        email,
-        phone,
-        category_id,
-      };
+    const row = db.query(
+      `UPDATE tbl_contacts
+      SET name = ?, email = ?, phone = ?
+      WHERE id = ?`,
+      [name, email, phone, id],
+    );
 
-      contacts = contacts.map((contact) => (
-        contact.id === id ? updatedContact : contact
-      ));
-
-      resolve(contacts);
-    });
+    return row;
   }
 
   deleteById(id) {
-    return new Promise((resolve) => {
-      contacts = contacts.filter((contact) => contact.id !== id);
-      resolve(contacts);
-    });
+    const deleteContact = db.query('DELETE FROM tbl_contacts WHERE id = ?', [id]);
+    return deleteContact;
   }
 }
 
