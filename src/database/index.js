@@ -1,11 +1,11 @@
 const mysql = require('mysql');
 
 const database = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  port: 3306,
-  password: 'root',
-  database: 'bd_mycontacts',
+  host: process.env.HOST,
+  user: process.env.USER,
+  port: process.env.PORT,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE,
 });
 
 exports.query = async (query, values = '') => new Promise((resolve, reject) => {
