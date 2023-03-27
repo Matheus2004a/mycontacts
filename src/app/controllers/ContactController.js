@@ -42,7 +42,7 @@ class ContactController {
   async update(req, res) {
     const { id } = req.params;
     const {
-      name, email, phone,
+      name, email, phone, category_id,
     } = req.body;
 
     const [contactExists] = await ContactRepository.findById(id);
@@ -55,7 +55,7 @@ class ContactController {
     }
 
     await ContactRepository.updateById(id, {
-      name, email, phone,
+      name, email, phone, category_id,
     });
 
     res.send({ message: 'User update successfully' });

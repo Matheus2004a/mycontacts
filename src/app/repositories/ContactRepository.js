@@ -5,12 +5,23 @@ const db = require('../../database');
 class ContactRepository {
   findAll(orderBy = 'ASC') {
     const direction = orderBy.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
-    const rows = db.query(`SELECT * FROM tbl_contacts ORDER BY name ${direction}`);
+    const rows = db.query(
+      `SELECT tbl_contacts.*, tbl_categories.name AS category_name
+      FROM tbl_contacts
+      LEFT JOIN tbl_categories ON tbl_categories.id = tbl_contacts.tbl_categories_id
+      ORDER BY tbl_categories.name ${direction}`,
+    );
     return rows;
   }
 
   findById(id) {
-    const row = db.query('SELECT * FROM tbl_contacts WHERE id = ?', [id]);
+    const row = db.query(
+      `SELECT tbl_contacts.*, tbl_categories.name AS category_name
+      FROM tbl_contacts
+      LEFT JOIN tbl_categories ON tbl_categories.id = tbl_contacts.tbl_categories_id
+      WHERE tbl_contacts.id = ?`,
+      [id],
+    );
     return row;
   }
 
@@ -32,13 +43,13 @@ class ContactRepository {
   }
 
   updateById(id, {
-    name, email, phone,
+    name, email, phone, category_id,
   }) {
     const row = db.query(
       `UPDATE tbl_contacts
-      SET name = ?, email = ?, phone = ?
+      SET name = ?, email = ?, phone = ?, tbl_categories_id = ?
       WHERE id = ?`,
-      [name, email, phone, id],
+      [name, email, phone, category_id, id],
     );
 
     return row;
