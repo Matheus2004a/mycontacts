@@ -30,9 +30,7 @@ class ContactRepository {
     return row;
   }
 
-  create({
-    name, email, phone,
-  }) {
+  create({ name, email, phone }) {
     const row = db.query(
       `INSERT INTO tbl_contacts(id, name, email, phone)
       VALUES(?, ?, ?, ?)`,

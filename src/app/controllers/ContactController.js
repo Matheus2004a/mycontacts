@@ -6,7 +6,7 @@ class ContactController {
     const { orderBy } = req.query;
     const contacts = await ContactRepository.findAll(orderBy);
 
-    if (contacts.length <= 0) return res.status(404).send({ message: 'No users registered' });
+    if (contacts.length <= 0) return res.status(404).send({ message: 'No contacts registered' });
 
     res.send(contacts);
   }
@@ -17,7 +17,7 @@ class ContactController {
 
     const [contact] = await ContactRepository.findById(id);
 
-    if (!contact) return res.status(404).send({ message: 'User not found' });
+    if (!contact) return res.status(404).send({ message: 'Contact not found' });
 
     res.send(contact);
   }
@@ -36,7 +36,7 @@ class ContactController {
       name, email, phone, category_id,
     });
 
-    res.send(contact);
+    res.status(201).send(contact);
   }
 
   async update(req, res) {
@@ -46,7 +46,7 @@ class ContactController {
     } = req.body;
 
     const [contactExists] = await ContactRepository.findById(id);
-    if (!contactExists) return res.status(404).send({ message: 'User not found' });
+    if (!contactExists) return res.status(404).send({ message: 'Contact not found' });
 
     const [contactByEmail] = await ContactRepository.findByEmail(email);
 
@@ -58,7 +58,7 @@ class ContactController {
       name, email, phone, category_id,
     });
 
-    res.send({ message: 'User update successfully' });
+    res.status(202).send({ message: 'Contact update successfully' });
   }
 
   async delete(req, res) {
@@ -66,11 +66,11 @@ class ContactController {
 
     const [contact] = await ContactRepository.findById(id);
 
-    if (!contact) return res.status(404).send({ message: 'User not found' });
+    if (!contact) return res.status(404).send({ message: 'Contact not found' });
 
     await ContactRepository.deleteById(id);
 
-    res.status(201).send({ message: 'User deleted successfully' });
+    res.status(202).send({ message: 'Contact deleted successfully' });
   }
 }
 
