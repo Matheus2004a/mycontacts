@@ -1,4 +1,5 @@
 const ContactRepository = require('../repositories/ContactRepository');
+const isInvalidUUID = require('../utils/isValidUUID');
 
 class ContactController {
   // list all registers
@@ -15,6 +16,10 @@ class ContactController {
   async show(req, res) {
     const { id } = req.params;
 
+    if (!isInvalidUUID(id)) {
+      return res.status(400).send({ message: 'Invalid contact id' });
+    }
+
     const [contact] = await ContactRepository.findById(id);
 
     if (!contact) return res.status(404).send({ message: 'Contact not found' });
@@ -28,15 +33,26 @@ class ContactController {
       name, email, phone, category_id,
     } = req.body;
 
-    const [contactExists] = await ContactRepository.findByEmail(email);
+    if (category_id && !isInvalidUUID(category_id)) {
+      return res.status(400).send({ message: 'Invalid category id' });
+    }
 
-    if (contactExists) return res.status(409).send({ message: 'Contact already exist' });
+    if (email) {
+      const [contactExists] = await ContactRepository.findByEmail(email);
 
-    const contact = await ContactRepository.create({
-      name, email, phone, category_id,
+      if (contactExists) return res.status(409).send({ message: 'Contact already exist' });
+    } else {
+      return res.status(400).send({ message: 'Fill your email' });
+    }
+
+    await ContactRepository.create({
+      name,
+      email,
+      phone,
+      category_id: category_id || null,
     });
 
-    res.status(201).send(contact);
+    res.status(201).send({ message: 'Contact created successfully' });
   }
 
   async update(req, res) {
@@ -45,17 +61,28 @@ class ContactController {
       name, email, phone, category_id,
     } = req.body;
 
+    if (!isInvalidUUID(id)) {
+      return res.status(400).send({ message: 'Invalid contact id' });
+    }
+
     const [contactExists] = await ContactRepository.findById(id);
     if (!contactExists) return res.status(404).send({ message: 'Contact not found' });
 
-    const [contactByEmail] = await ContactRepository.findByEmail(email);
+    if (email) {
+      const [contactByEmail] = await ContactRepository.findByEmail(email);
 
-    if (contactByEmail && contactByEmail.id !== id) {
-      return res.status(409).send({ message: 'Contact already exist' });
+      if (contactByEmail && contactByEmail.id !== id) {
+        return res.status(409).send({ message: 'Contact already exist' });
+      }
+    } else {
+      return res.status(400).send({ message: 'Fill your email' });
     }
 
     await ContactRepository.updateById(id, {
-      name, email, phone, category_id,
+      name,
+      email,
+      phone,
+      category_id: category_id || null,
     });
 
     res.status(202).send({ message: 'Contact update successfully' });
@@ -63,6 +90,10 @@ class ContactController {
 
   async delete(req, res) {
     const { id } = req.params;
+
+    if (!isInvalidUUID(id)) {
+      return res.status(400).send({ message: 'Invalid contact id' });
+    }
 
     const [contact] = await ContactRepository.findById(id);
 
