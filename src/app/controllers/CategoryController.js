@@ -4,7 +4,7 @@ class CategoryController {
   async index(req, res) {
     const categories = await CategoryRepository.findAll();
 
-    if (!categories.length) return res.status(404).send({ message: 'No categories registered' });
+    if (!categories.length) return res.status(404).send({ message: 'Nenhuma categoria cadastrada' });
 
     res.status(200).send(categories);
   }
@@ -12,11 +12,11 @@ class CategoryController {
   async store(req, res) {
     const { name } = req.body;
 
-    if (!name) return res.status(404).send({ message: 'Name is required' });
+    if (!name) return res.status(404).send({ message: 'Nome é obrigatório' });
 
     try {
       await CategoryRepository.create({ name });
-      res.status(200).send({ message: 'Category created successfully' });
+      res.status(200).send({ message: 'Categoria criada com sucesso' });
     } catch (error) {
       res.status(409).send({ message: error.message });
     }

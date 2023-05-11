@@ -7,7 +7,7 @@ class ContactController {
     const { orderBy } = req.query;
     const contacts = await ContactRepository.findAll(orderBy);
 
-    if (contacts.length <= 0) return res.status(404).send({ message: 'No contacts registered' });
+    if (contacts.length <= 0) return res.status(404).send({ message: 'Nenhum contato cadastrado' });
 
     res.send(contacts);
   }
@@ -17,12 +17,12 @@ class ContactController {
     const { id } = req.params;
 
     if (!isInvalidUUID(id)) {
-      return res.status(400).send({ message: 'Invalid contact id' });
+      return res.status(400).send({ message: 'Id do contato inválido' });
     }
 
     const [contact] = await ContactRepository.findById(id);
 
-    if (!contact) return res.status(404).send({ message: 'Contact not found' });
+    if (!contact) return res.status(404).send({ message: 'Contato não encontrado' });
 
     res.send(contact);
   }
@@ -34,15 +34,15 @@ class ContactController {
     } = req.body;
 
     if (category_id && !isInvalidUUID(category_id)) {
-      return res.status(400).send({ message: 'Invalid category id' });
+      return res.status(400).send({ message: 'Id do contato inválido' });
     }
 
     if (email) {
       const [contactExists] = await ContactRepository.findByEmail(email);
 
-      if (contactExists) return res.status(409).send({ message: 'Contact already exist' });
+      if (contactExists) return res.status(409).send({ message: 'Contato já cadastrado' });
     } else {
-      return res.status(400).send({ message: 'Fill your email' });
+      return res.status(400).send({ message: 'Preencha seu email' });
     }
 
     await ContactRepository.create({
@@ -52,7 +52,7 @@ class ContactController {
       category_id: category_id || null,
     });
 
-    res.status(201).send({ message: 'Contact created successfully' });
+    res.status(201).send({ message: 'Contato criado com sucesso' });
   }
 
   async update(req, res) {
@@ -62,20 +62,20 @@ class ContactController {
     } = req.body;
 
     if (!isInvalidUUID(id)) {
-      return res.status(400).send({ message: 'Invalid contact id' });
+      return res.status(400).send({ message: 'Id do contato inválido' });
     }
 
     const [contactExists] = await ContactRepository.findById(id);
-    if (!contactExists) return res.status(404).send({ message: 'Contact not found' });
+    if (!contactExists) return res.status(404).send({ message: 'Contato não encontrado' });
 
     if (email) {
       const [contactByEmail] = await ContactRepository.findByEmail(email);
 
       if (contactByEmail && contactByEmail.id !== id) {
-        return res.status(409).send({ message: 'Contact already exist' });
+        return res.status(409).send({ message: 'Contato já cadastrado' });
       }
     } else {
-      return res.status(400).send({ message: 'Fill your email' });
+      return res.status(400).send({ message: 'Preencha seu email' });
     }
 
     await ContactRepository.updateById(id, {
@@ -85,23 +85,23 @@ class ContactController {
       category_id: category_id || null,
     });
 
-    res.status(202).send({ message: 'Contact update successfully' });
+    res.status(202).send({ message: 'Contato atualizado com sucesso' });
   }
 
   async delete(req, res) {
     const { id } = req.params;
 
     if (!isInvalidUUID(id)) {
-      return res.status(400).send({ message: 'Invalid contact id' });
+      return res.status(400).send({ message: 'Id do contato inválido' });
     }
 
     const [contact] = await ContactRepository.findById(id);
 
-    if (!contact) return res.status(404).send({ message: 'Contact not found' });
+    if (!contact) return res.status(404).send({ message: 'Contato não encontrado' });
 
     await ContactRepository.deleteById(id);
 
-    res.status(202).send({ message: 'Contact deleted successfully' });
+    res.status(202).send({ message: 'Contato deletado com sucesso' });
   }
 }
 
