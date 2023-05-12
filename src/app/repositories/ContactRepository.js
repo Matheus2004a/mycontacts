@@ -30,11 +30,13 @@ class ContactRepository {
     return row;
   }
 
-  create({ name, email, phone }) {
+  create({
+    name, email, phone, category_id,
+  }) {
     const row = db.query(
-      `INSERT INTO tbl_contacts(id, name, email, phone)
-      VALUES(?, ?, ?, ?)`,
-      [randomUUID(), name, email, phone],
+      `INSERT INTO tbl_contacts(id, name, email, phone, tbl_categories_id)
+      VALUES(?, ?, ?, ?, ?)`,
+      [randomUUID(), name, email, phone, category_id],
     );
 
     return row;
